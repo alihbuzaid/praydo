@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    praydo_lib::run()
+    buzaid_prayer_times_lib::run()
 }

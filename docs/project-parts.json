@@ -1,0 +1,37 @@
+{
+  "repository_type": "monorepo",
+  "project_name": "praydo",
+  "parts": [
+    {
+      "part_id": "frontend",
+      "part_name": "Frontend",
+      "project_type_id": "web",
+      "root_path": "src",
+      "entry_point": "src/routes/+layout.svelte",
+      "tech_stack": [
+        "SvelteKit 2",
+        "Svelte 5",
+        "TypeScript",
+        "Skeleton UI",
+        "Tailwind CSS 4",
+        "Vitest"
+      ]
+    },
+    {
+      "part_id": "desktop-shell",
+      "part_name": "Desktop Shell",
+      "project_type_id": "desktop",
+      "root_path": "src-tauri",
+      "entry_point": "src-tauri/src/main.rs",
+      "tech_stack": ["Tauri 2", "Rust 2021", "Cargo", "Tauri plugins"]
+    }
+  ],
+  "integration_points": [
+    {
+      "from": "frontend",
+      "to": "desktop-shell",
+      "type": "Tauri command bridge",
+      "details": "Frontend invokes send_native_notification and uses Tauri plugins for HTTP, FS, notifications, and autostart."
+    }
+  ]
+}

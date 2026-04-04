@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Praydo",
+  "productName": "BuzaidPrayerTimes",
   "version": "0.6.0",
-  "identifier": "id.my.apr.praydo",
+  "identifier": "id.my.apr.buzaidprayertimes",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "devUrl": "http://localhost:1420",

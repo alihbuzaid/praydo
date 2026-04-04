@@ -1,7 +1,7 @@
 {
-  "name": "praydo",
+  "name": "buzaid-prayer-times",
   "version": "0.6.0",
-  "description": "Buzaid _ Prayer Times",
+  "description": "BuzaidPrayerTimes - Accurate Prayer Time App",
   "type": "module",
   "scripts": {
     "dev": "vite dev",

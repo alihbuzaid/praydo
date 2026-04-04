@@ -21,6 +21,7 @@
     "svelte:default",
     "core:app:allow-default-window-icon",
     "fs:default",
+    "fs:allow-appdata-write-recursive",
     "fs:allow-resource-read-recursive"
   ]
 }

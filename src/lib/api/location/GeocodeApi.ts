@@ -17,7 +17,7 @@ export const geocode = async (place: string) => {
       headers: {
         Accept: 'application/json',
         'User-Agent':
-          'Praydo/0.4 (https://github.com/agnanp/praydo; praydo@apr.my.id)',
+          'BuzaidPrayerTimes/0.6 (https://github.com/alihbuzaid/BuzaidPrayerTimes)',
       },
     });
     return response;
