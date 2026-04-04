@@ -1,7 +1,7 @@
 {
   "name": "praydo",
-  "version": "0.5.0",
-  "description": "Pray on Time. Praydo.",
+  "version": "0.6.0",
+  "description": "Buzaid _ Prayer Times",
   "type": "module",
   "scripts": {
     "dev": "vite dev",

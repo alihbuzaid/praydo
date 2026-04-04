@@ -14,8 +14,17 @@
   import { modeLightSwitch } from '$lib/store/modeLightSwitch';
   import type { PrayerManager } from '$lib/logic/PrayerManager.svelte';
   import QiblaCompass from '$lib/components/QiblaCompass.svelte';
+  import { t } from '$lib/i18n';
 
   const manager = getContext('prayerManager') as PrayerManager;
+
+  // Helper to translate prayer names, with fallback to original
+  function prayerLabel(name: string | undefined): string {
+    if (!name) return '';
+    const key = name.toLowerCase() as any;
+    const translated = t(key);
+    return translated || name;
+  }
 
   // Helper function to get icon for each prayer
   function getPrayerIcon(prayerName: string) {
@@ -54,7 +63,7 @@
         <div class="h-full flex flex-col justify-between">
           <div class="flex justify-between items-start">
             <span class="badge preset-filled-tertiary-50-950">
-              Next Prayer
+              {t('nextPrayer')}
             </span>
           </div>
 
@@ -73,7 +82,8 @@
               <p
                 class="text-secondary-300 text-sm font-medium tracking-widest uppercase"
               >
-                Remaining until {manager.nextPrayer?.name}
+                {t('remainingUntil')}
+                {prayerLabel(manager.nextPrayer?.name)}
               </p>
             {/if}
           </div>
@@ -83,7 +93,7 @@
               {@const PrayerIcon = getPrayerIcon(manager.nextPrayer.name)}
               <div>
                 <h2 class="text-3xl font-bold text-tertiary-50">
-                  {manager.nextPrayer.name}
+                  {prayerLabel(manager.nextPrayer.name)}
                 </h2>
                 <p class="text-secondary-300 font-mono">
                   {manager.nextPrayer.time}
@@ -105,16 +115,14 @@
         >
           <div class="flex items-start justify-end">
             <span class="text-4xl font-light text-tertiary-50">
-              {manager.currentTime.getHours().toString().padStart(2, '0')}<span
-                class="animate-pulse text-tertiary-50">:</span
-              >{manager.currentTime.getMinutes().toString().padStart(2, '0')}
+              {manager.currentTimeString}
             </span>
           </div>
           <div>
             <p
               class="text-primary-500 text-xs font-bold uppercase tracking-wider mb-1"
             >
-              Today
+              {t('today')}
             </p>
             <p class="text-tertiary-50 text-lg font-bold leading-tight">
               {manager.formattedDate}
@@ -135,7 +143,7 @@
               <p
                 class="text-primary-500 text-[10px] font-bold uppercase tracking-wider"
               >
-                Location
+                {t('locationLabel')}
               </p>
             </div>
 
@@ -186,7 +194,7 @@
                   ? 'opacity-100 text-tertiary-50'
                   : 'opacity-70'}"
               >
-                {prayer.name}
+                {prayerLabel(prayer.name)}
               </span>
               <span
                 class="text-lg font-mono {isNext
@@ -205,8 +213,8 @@
         <button
           type="button"
           class="btn-icon preset-tonal-tertiary"
-          title="Calendar"
-          aria-label="Calendar"
+          title={t('calendar')}
+          aria-label={t('calendar')}
           onclick={() => goto('calendar')}
         >
           <CalendarDays size={20} />
@@ -214,8 +222,8 @@
         <button
           type="button"
           class="btn-icon preset-tonal-tertiary"
-          title="Settings"
-          aria-label="Settings"
+          title={t('settings')}
+          aria-label={t('settings')}
           onclick={() => goto('settings')}
         >
           <Settings size={20} />

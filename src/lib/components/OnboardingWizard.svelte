@@ -13,6 +13,7 @@
     isPermissionGranted,
     requestPermission,
   } from '@tauri-apps/plugin-notification';
+  import { t } from '$lib/i18n';
 
   let { manager }: { manager: OnboardingManager } = $props();
 
@@ -36,11 +37,11 @@
         selectedLocation.state.latitude = parseFloat(item.lat);
         selectedLocation.state.longitude = parseFloat(item.lon);
       } else {
-        searchError = 'No locations found. Please try another search.';
+        searchError = t('noLocationsFound');
       }
     } catch (error) {
-      console.error('Error fetching location:', error);
-      searchError = 'Error fetching location. Please check your connection.';
+      console.error(t('errorFetchingLocation'), error);
+      searchError = t('errorFetchingLocation');
     } finally {
       isSearching = false;
     }
@@ -77,9 +78,9 @@
     class="card w-full max-w-xl p-8 shadow-xl bg-surface-100 dark:bg-surface-800"
   >
     <header class="mb-6">
-      <h2 class="h2 font-bold text-primary-500">Welcome to Praydo</h2>
+      <h2 class="h2 font-bold text-primary-500">{t('welcome')}</h2>
       <p class="text-surface-600 dark:text-surface-400">
-        Let's get you set up in a few quick steps.
+        {t('letsGetYouSetup')}
       </p>
     </header>
 
@@ -87,10 +88,11 @@
       {#if manager.currentStep === 0}
         <div transition:fade>
           <h3 class="h3 mb-2 flex items-center gap-2">
-            <MapPin size={24} /> Step 1: Set Your Location
+            <MapPin size={24} />
+            {t('step1SetLocation')}
           </h3>
           <p class="mb-6 opacity-70">
-            Search for your city to get accurate prayer times.
+            {t('searchForCity')}
           </p>
 
           <div class="space-y-4">
@@ -101,7 +103,7 @@
               <input
                 class="ig-input"
                 type="search"
-                placeholder="Enter a city (e.g., Jakarta, London...)"
+                placeholder={t('enterCityPlaceholder')}
                 bind:value={searchQuery}
                 onkeydown={(e) => e.key === 'Enter' && handleLocationSearch()}
               />
@@ -110,7 +112,7 @@
                 disabled={isSearching}
                 onclick={handleLocationSearch}
               >
-                {isSearching ? 'Searching...' : 'Search'}
+                {isSearching ? t('searching') : t('search')}
               </button>
             </div>
 
@@ -125,7 +127,7 @@
                 <p
                   class="text-xs uppercase font-bold tracking-wider opacity-60"
                 >
-                  Selected Location
+                  {t('selectedLocationLabel')}
                 </p>
                 <p class="font-bold text-lg">{selectedLocation.state.label}</p>
                 <p class="text-sm opacity-70">
@@ -140,12 +142,13 @@
       {:else if manager.currentStep === 1}
         <div transition:fade>
           <h3 class="h3 mb-2 flex items-center gap-2">
-            <Calculator size={24} /> Step 2: Calculation Method
+            <Calculator size={24} />
+            {t('step2CalculationMethod')}
           </h3>
           <p class="mb-6 opacity-70">Select the method used in your region.</p>
 
           <label class="label">
-            <span class="label-text">Calculation Method</span>
+            <span class="label-text">{t('calculationMethodLabel')}</span>
             <select
               bind:value={calculationSettings.state.method}
               class="select"
@@ -158,7 +161,7 @@
 
           <div class="mt-6 p-4 bg-surface-200 dark:bg-surface-700 rounded-lg">
             <p class="text-sm opacity-80 italic">
-              Tip: If you're not sure, you can keep the default or change it
+              {t('tipKeepDefault')}
               later in Settings.
             </p>
           </div>
@@ -166,10 +169,11 @@
       {:else if manager.currentStep === 2}
         <div transition:fade>
           <h3 class="h3 mb-2 flex items-center gap-2">
-            <BellRing size={24} /> Step 3: Notifications
+            <BellRing size={24} />
+            {t('step3Notifications')}
           </h3>
           <p class="mb-6 opacity-70">
-            Enable alerts so you never miss a prayer.
+            {t('enableAlerts')}
           </p>
 
           <div class="space-y-6">
@@ -182,13 +186,13 @@
                 )}
                 onchange={toggleAllAlerts}
               />
-              <span class="font-bold">Enable all prayer alerts</span>
+              <span class="font-bold">{t('enableAllPrayerAlerts')}</span>
             </label>
 
             <div class="grid grid-cols-2 gap-4 pl-8">
-              {#each ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'] as name}
+              {#each [t('fajr'), t('dhuhr'), t('asr'), t('maghrib'), t('isha')] as prayerName}
                 {@const key =
-                  name.toLowerCase() as keyof typeof selectedAlert.state.alert}
+                  prayerName.toLowerCase() as keyof typeof selectedAlert.state.alert}
                 <label class="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -200,7 +204,7 @@
                       }
                     }}
                   />
-                  <p>{name}</p>
+                  <p>{prayerName}</p>
                 </label>
               {/each}
             </div>
@@ -224,7 +228,7 @@
       <div class="flex gap-2">
         {#if !manager.isFirstStep}
           <button class="btn preset-outline" onclick={() => manager.prevStep()}>
-            Back
+            {t('back')}
           </button>
         {/if}
 
@@ -235,7 +239,7 @@
               !selectedLocation.state.label}
             onclick={() => manager.nextStep()}
           >
-            Next
+            {t('next')}
           </button>
         {:else}
           <button
@@ -246,7 +250,7 @@
               // because selectedLocation.state is now populated.
             }}
           >
-            Finish
+            {t('finish')}
           </button>
         {/if}
       </div>

@@ -53,14 +53,21 @@ vi.mock('$lib/store/selectedAlert', () => ({
     state: {
       alert: {
         fajr: true,
-        sunrise: true,
         dhuhr: true,
         asr: true,
         maghrib: true,
         isha: true,
       },
+      sound: {
+        fajr: 'fajr.mp3',
+        dhuhr: 'dhuhr.mp3',
+        asr: 'solemn.mp3',
+        maghrib: 'maghrib.mp3',
+        isha: 'solemn.mp3',
+      },
     },
   },
+  alertPrayerKeys: ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'],
 }));
 vi.mock('@tauri-apps/api/core', () => ({
   invoke: vi.fn(),
@@ -79,11 +86,22 @@ describe('PrayerManager', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-02-28T12:00:00Z'));
+    selectedAlert.state.alert.fajr = true;
+    selectedAlert.state.alert.dhuhr = true;
+    selectedAlert.state.alert.asr = true;
+    selectedAlert.state.alert.maghrib = true;
+    selectedAlert.state.alert.isha = true;
+    selectedAlert.state.sound.fajr = 'fajr.mp3';
+    selectedAlert.state.sound.dhuhr = 'dhuhr.mp3';
+    selectedAlert.state.sound.asr = 'solemn.mp3';
+    selectedAlert.state.sound.maghrib = 'maghrib.mp3';
+    selectedAlert.state.sound.isha = 'solemn.mp3';
     manager = new PrayerManager();
   });
 
   afterEach(() => {
     manager.destroy();
+    vi.clearAllMocks();
     vi.useRealTimers();
   });
 
@@ -203,5 +221,25 @@ describe('PrayerManager', () => {
 
     // Clean up mock for other tests
     mockLocation.state.id = 'jakarta-1';
+  });
+
+  it('should play the selected sound file for an enabled prayer alert', async () => {
+    const { playSound } = await import('$lib/sound');
+
+    selectedAlert.state.sound.fajr = 'adhan-fajr.mp3';
+
+    await (manager as any).sendPrayerNotification('Fajr', '05:00');
+
+    expect(playSound).toHaveBeenCalledWith('adhan-fajr.mp3');
+  });
+
+  it('should fall back to the default sound when the prayer alert is disabled', async () => {
+    const { playSound } = await import('$lib/sound');
+
+    selectedAlert.state.alert.asr = false;
+
+    await (manager as any).sendPrayerNotification('Asr', '15:30');
+
+    expect(playSound).toHaveBeenCalledWith('solemn.mp3');
   });
 });

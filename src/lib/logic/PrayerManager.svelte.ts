@@ -3,7 +3,12 @@ import { selectedLocation } from '$lib/store/selectedLocation';
 import { calculationSettings } from '$lib/store/calculationSettings';
 import { selectedTimes } from '$lib/store/selectedTimes';
 import { timeRemaining } from '$lib/store/timeRemaining';
-import { selectedAlert } from '$lib/store/selectedAlert';
+import {
+  alertPrayerKeys,
+  selectedAlert,
+  type AlertPrayerKey,
+} from '$lib/store/selectedAlert';
+import { languageStore } from '$lib/store/language';
 import { invoke } from '@tauri-apps/api/core';
 import {
   isPermissionGranted,
@@ -13,9 +18,38 @@ import { playSound } from '$lib/sound';
 import { gregorianToHijri } from '@tabby_ai/hijri-converter';
 import { formattedLocation } from '$lib/utils/stringUtils';
 import { calculateQiblaBearing } from '$lib/utils/qibla';
-import { formatHijriDate } from '$lib/utils/islamic';
 import { parseTimeString } from '$lib/utils/time';
 import type { PrayerName, PrayerTimes } from './types';
+
+const ARABIC_HIJRI_MONTHS = [
+  'محرم',
+  'صفر',
+  'ربيع الأول',
+  'ربيع الثاني',
+  'جمادى الأولى',
+  'جمادى الآخرة',
+  'رجب',
+  'شعبان',
+  'رمضان',
+  'شوال',
+  'ذو القعدة',
+  'ذو الحجة',
+];
+
+const ENGLISH_HIJRI_MONTHS = [
+  'Muharram',
+  'Safar',
+  'Rabi al-Awwal',
+  'Rabi al-Thani',
+  'Jumada al-Awwal',
+  'Jumada al-Thani',
+  'Rajab',
+  'Shaban',
+  'Ramadan',
+  'Shawwal',
+  'Dhul-Qadah',
+  'Dhul-Hijjah',
+];
 
 export class PrayerManager {
   currentTime = $state(new Date());
@@ -94,6 +128,10 @@ export class PrayerManager {
 
   // --- Derived State: Date & Time ---
 
+  private isArabic = $derived(languageStore.state.current === 'ar');
+
+  private localeTag = $derived(this.isArabic ? 'ar-SA' : 'en-US');
+
   formattedDate = $derived.by(() => {
     const options: Intl.DateTimeFormatOptions = {
       weekday: 'long',
@@ -101,7 +139,7 @@ export class PrayerManager {
       month: 'long',
       day: 'numeric',
     };
-    return this.currentTime.toLocaleDateString('en-US', options);
+    return this.currentTime.toLocaleDateString(this.localeTag, options);
   });
 
   islamicDate = $derived.by(() => {
@@ -111,7 +149,21 @@ export class PrayerManager {
       day: this.currentTime.getDate(),
     });
 
-    return formatHijriDate(hijriDate);
+    const months = this.isArabic ? ARABIC_HIJRI_MONTHS : ENGLISH_HIJRI_MONTHS;
+    const yearSuffix = this.isArabic ? 'هـ' : ' AH';
+
+    return `${hijriDate.day} ${months[hijriDate.month - 1]} ${hijriDate.year}${yearSuffix}`;
+  });
+
+  currentTimeString = $derived.by(() => {
+    const use24Hour = selectedTimes.state.format === '24h';
+    const options: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: !use24Hour,
+    };
+    return this.currentTime.toLocaleTimeString(this.localeTag, options);
   });
 
   isSetupRequired = $derived.by(() => {
@@ -218,6 +270,20 @@ export class PrayerManager {
     return parseTimeString(timeString, this.currentTime);
   }
 
+  getSelectedSound(name: PrayerName): string | null {
+    const prayerKey = name.toLowerCase();
+
+    if (!this.isAlertPrayerKey(prayerKey)) {
+      return null;
+    }
+
+    return selectedAlert.state.sound[prayerKey];
+  }
+
+  private isAlertPrayerKey(prayerKey: string): prayerKey is AlertPrayerKey {
+    return alertPrayerKeys.includes(prayerKey as AlertPrayerKey);
+  }
+
   // --- Notification Logic ---
 
   private async checkNotifications(prev: Date, current: Date) {
@@ -281,17 +347,13 @@ export class PrayerManager {
 
     // Sound logic
     const prayerKey = name.toLowerCase();
-    const isAlertEnabled =
-      selectedAlert.state.alert[
-        prayerKey as keyof typeof selectedAlert.state.alert
-      ];
+    const isAlertPrayer = this.isAlertPrayerKey(prayerKey);
+    const isAlertEnabled = isAlertPrayer
+      ? selectedAlert.state.alert[prayerKey]
+      : false;
 
-    if (isAlertEnabled) {
-      if (prayerKey === 'fajr') {
-        playSound('adhan-fajr.mp3');
-      } else {
-        playSound('adhan-makkah.mp3');
-      }
+    if (isAlertPrayer && isAlertEnabled) {
+      playSound(selectedAlert.state.sound[prayerKey]);
     } else {
       playSound('solemn.mp3');
     }

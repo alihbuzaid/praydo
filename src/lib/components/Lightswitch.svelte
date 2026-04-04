@@ -17,9 +17,14 @@
   };
 </script>
 
-<Switch
-  controlActive="preset-tonal-primary"
-  controlInactive="bg-secondary-50"
-  {checked}
-  {onCheckedChange}
-/>
+<div dir="ltr">
+  <Switch
+    controlActive="preset-tonal-primary"
+    controlInactive="bg-secondary-50"
+    controlWidth="w-12"
+    controlHeight="h-6"
+    thumbTranslateX="translate-x-4"
+    {checked}
+    {onCheckedChange}
+  />
+</div>
