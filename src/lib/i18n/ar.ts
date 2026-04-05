@@ -50,6 +50,7 @@ export const ar = {
 
   // Notifications
   notificationBeforePrayerTime: 'إشعار قبل وقت الصلاة',
+  enableNotifications: 'تفعيل الإشعارات',
 
   // Language
   selectLanguage: 'اختر اللغة',

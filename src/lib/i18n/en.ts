@@ -50,6 +50,7 @@ export const en = {
 
   // Notifications
   notificationBeforePrayerTime: 'Notification before prayer time',
+  enableNotifications: 'Enable notifications',
 
   // Language
   selectLanguage: 'Select Language',

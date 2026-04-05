@@ -602,14 +602,33 @@
           </div>
         </Tabs.Panel>
         <Tabs.Panel value="alert">
-          <label class="label px-4">
-            <span class="label-text">{t('notificationBeforePrayerTime')}</span>
-            <select bind:value={timeRemaining.state.minutes} class="select">
-              {#each options as option}
-                <option value={option.value}>{option.label}</option>
-              {/each}
-            </select>
-          </label>
+          <div class="px-4 space-y-4">
+            <label class="flex items-center space-x-2">
+              <div dir="ltr">
+                <Switch
+                  name="notifications-enabled"
+                  controlActive="preset-tonal-primary"
+                  controlInactive="bg-secondary-50"
+                  controlWidth="w-12"
+                  controlHeight="h-6"
+                  thumbTranslateX="translate-x-4"
+                  checked={selectedAlert.state.enabled}
+                  onCheckedChange={(e) =>
+                    (selectedAlert.state.enabled = e.checked)}
+                />
+              </div>
+              <p>{t('enableNotifications')}</p>
+            </label>
+            <label class="label">
+              <span class="label-text">{t('notificationBeforePrayerTime')}</span
+              >
+              <select bind:value={timeRemaining.state.minutes} class="select">
+                {#each options as option}
+                  <option value={option.value}>{option.label}</option>
+                {/each}
+              </select>
+            </label>
+          </div>
         </Tabs.Panel>
         <Tabs.Panel value="general">
           <div class="space-y-4">

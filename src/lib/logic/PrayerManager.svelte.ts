@@ -287,6 +287,8 @@ export class PrayerManager {
   // --- Notification Logic ---
 
   private async checkNotifications(prev: Date, current: Date) {
+    if (!selectedAlert.state.enabled) return;
+
     for (const prayer of this.enabledPrayers) {
       const prayerDate = this.parseTime(prayer.time);
 

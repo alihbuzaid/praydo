@@ -11,12 +11,14 @@ export const alertPrayerKeys = [
 export type AlertPrayerKey = (typeof alertPrayerKeys)[number];
 
 export interface AlertState {
+  enabled: boolean;
   alert: Record<AlertPrayerKey, boolean>;
   sound: Record<AlertPrayerKey, string>;
   [key: string]: unknown;
 }
 
 const defaultAlertState: AlertState = {
+  enabled: true,
   alert: {
     fajr: false,
     dhuhr: false,
@@ -53,3 +55,6 @@ selectedAlert.state.sound = {
   ...defaultAlertState.sound,
   ...(selectedAlert.state.sound as Partial<Record<AlertPrayerKey, string>>),
 };
+
+selectedAlert.state.enabled =
+  selectedAlert.state.enabled ?? defaultAlertState.enabled;
